@@ -1,0 +1,99 @@
+<!--
+SLAM（cartographer）サンプルのlaunch
+
+実行にはLRFが必要です。
+地図を生成していくためにはメガローバーを手動で移動させる必要があります。
+ゲームパッド操作サンプルまたはマウス（タッチパッド）操作サンプルを使用してください。
+
+起動コマンド： roslaunch megarover_samples cartographer.launch
+-->
+
+<launch>
+
+  <!-- 引数 -->
+  <arg name="rover_type"  default="mecanum2"  doc="mecanum2 / g120" />
+  <arg name="lrf"         default="urg"       doc="urg / tg30 / sim"/>
+
+  <!-- オドメトリの配信ノード -->
+  <node pkg="mecanumrover_samples" type="pub_odom" name="pub_odom" />
+
+  <!-- URG-04LX-UG01の場合 -->
+  <group if="$(eval lrf=='urg')">  
+    <!-- LRFのデバイスドライバノード -->
+    <node name="horizontal_laser" pkg="urg_node" type="urg_node" >
+      <param name="serial_port" value="/dev/ttyACM0" />
+      <param name="frame_id" value="lidar_link" />
+      <param name="angle_min" value="-1.57" />
+      <param name="angle_max" value="1.57" />
+    </node>
+  </group>
+
+  <!-- YDLiDAR TG30の場合 -->
+  <group if="$(eval lrf=='tg30')">
+    <!-- YDLiDARデバイスドライバノード-->
+    <node name="ydlidar_lidar_publisher"  pkg="ydlidar_ros_driver"  type="ydlidar_ros_driver_node" output="screen" respawn="false" >
+      <!-- string property -->
+      <param name="port"         type="string" value="/dev/ydlidar"/>  
+      <param name="frame_id"     type="string" value="lidar_link"/>
+      <param name="ignore_array"     type="string" value=""/>
+
+      <!-- int property -->
+      <param name="baudrate"         type="int" value="512000"/>  
+      <!-- 0:TYPE_TOF, 1:TYPE_TRIANGLE, 2:TYPE_TOF_NET -->
+      <param name="lidar_type"       type="int" value="0"/>  
+      <!-- 0:YDLIDAR_TYPE_SERIAL, 1:YDLIDAR_TYPE_TCP -->
+      <param name="device_type"         type="int" value="0"/>  
+      <param name="sample_rate"         type="int" value="20"/>  
+      <param name="abnormal_check_count"         type="int" value="4"/>  
+
+      <!-- bool property -->
+      <param name="resolution_fixed"    type="bool"   value="true"/>
+      <param name="auto_reconnect"    type="bool"   value="true"/>
+      <param name="reversion"    type="bool"   value="true"/>
+      <param name="inverted"    type="bool"   value="true"/>
+      <param name="isSingleChannel"    type="bool"   value="false"/>
+      <param name="intensity"    type="bool"   value="false"/>
+      <param name="support_motor_dtr"    type="bool"   value="false"/>
+      <param name="invalid_range_is_inf"    type="bool"   value="false"/>
+      <param name="point_cloud_preservative"    type="bool"   value="false"/>
+
+      <!-- float property -->
+      <param name="angle_min"    type="double" value="-180" />  <!-- センサの正面を0度する視野角の指定（最小値） -->
+      <param name="angle_max"    type="double" value="180" />  <!-- センサの正面を0度する視野角の指定（最大値） -->
+      <param name="range_min"    type="double" value="0.01" />
+      <param name="range_max"    type="double" value="50.0" />
+      <param name="frequency"    type="double" value="10.0"/>
+    </node>
+
+
+  </group>
+
+  <!-- シミュレータの場合 -->
+  <group if="$(eval lrf=='sim')">
+
+  </group>
+
+
+  <!-- メカナムローバーのロボットモデルの配信ノード -->
+  <param name="robot_description"
+    textfile="$(find mecanumrover_samples)/configuration_files/cartographer/mecanumrover_cartographer.urdf" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher"
+    type="robot_state_publisher" />
+
+  <!-- cartographer -->
+  <node name="cartographer_node" pkg="cartographer_ros"
+      type="cartographer_node" args="
+          -configuration_directory $(find mecanumrover_samples)/configuration_files/cartographer/
+          -configuration_basename mecanumrover_2d_cartographer.lua"
+      output="screen">
+    <!--<remap from="echoes" to="horizontal_laser_2d" />-->
+  </node>
+
+  <!-- グリッドマップの分解能の設定 -->
+  <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros"
+      type="cartographer_occupancy_grid_node" args="-resolution 0.05" />
+
+  <!-- Rviz -->
+  <node name="rviz" pkg="rviz" type="rviz" required="true"
+      args="-d $(find cartographer_ros)/configuration_files/demo_2d.rviz" />
+</launch>
