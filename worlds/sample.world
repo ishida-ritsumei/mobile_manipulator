@@ -1,0 +1,66 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+  <world name='default'>
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <include>
+      <name>chair</name>
+      <uri>model://sample/chair</uri>
+      <pose>2 2 0 0 0 1.5708</pose>
+    </include>
+    <include>
+      <name>cafe_table</name>
+      <uri>model://sample/cafe_table</uri>
+      <pose>2 0 0 0 0 0</pose>
+    </include>
+    <include>
+      <name>door</name>
+      <uri>model://sample/door</uri>
+      <pose>6 0 0.5 0 1.5708 3.1416</pose>
+    </include>
+    <include>
+      <name>wall2_1</name>
+      <uri>model://sample/wall2</uri>
+      <pose>6 4 0 0 0 -1.5708</pose>
+    </include>
+    <include>
+      <name>wall2_2</name>
+      <uri>model://sample/wall2</uri>
+      <pose>6 -0.2 0 0 0 -1.5708</pose>
+    </include>
+    <include>
+      <name>wall3_1</name>
+      <uri>model://sample/wall3</uri>
+      <pose>6 4 0 0 0 3.14</pose>
+    </include>
+    <include>
+      <name>wall3_2</name>
+      <uri>model://sample/wall3</uri>
+      <pose>6 -6 0 0 0 3.14</pose>
+    </include>
+    <include>
+      <name>wall3_3</name>
+      <uri>model://sample/wall3</uri>
+      <pose>-4 4 0 0 0 -1.5708</pose>
+    </include>
+    <include>
+      <name>wall4</name>
+      <uri>model://sample/wall4</uri>
+      <pose>6 -4 0 0 0 -1.5708</pose>
+    </include>
+    <include>
+      <name>wall5</name>
+      <uri>model://sample/wall5</uri>
+      <pose>6 0.2 1 0 0 -1.5708</pose>
+    </include>
+    <include>
+      <name>desk</name>
+      <uri>model://sample/desk</uri>
+      <pose>1.5 2.85 0.22 0 0 0</pose>
+    </include>
+  </world>
+</sdf>
